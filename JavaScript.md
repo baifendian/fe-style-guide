@@ -7,9 +7,10 @@
  * [命名](#命名)
  * [不要重写/扩展内置对象](#不要重写/扩展内置对象)
  * [代码格式](#代码格式)
- * [避免使用 switch, 可用对象字典代替](#避免使用 switch, 可用对象字典代替)
+ * [避免使用switch](#避免使用switch)
  * [测试](#测试)
  * [其他](#其他)
+
 ------------------------------------------------
 
 ## 命名
@@ -101,9 +102,10 @@ JSON.stringify = function() {
   * 其他参考 [JSDoc](http://usejsdoc.org/)
 
 
-## 避免使用 switch, 可用对象字典代替
+## 避免使用 switch
 
 ```javascript
+// 使用字典对象代替
 var cases = {
   alpha: function() {
     // ...
@@ -122,7 +124,7 @@ cases[cases[expression] ? expression : '_default']()
 
 ## 测试
   
-  
+  待补充
 
 
 ## 其他
