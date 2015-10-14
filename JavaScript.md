@@ -1,5 +1,17 @@
 # JavaScript 编码规范
 
+***
+
+## 目录
+
+ * [命名](#命名)
+ * [不要重写/扩展内置对象](#不要重写/扩展内置对象)
+ * [代码格式](#代码格式)
+ * [避免使用 switch, 可用对象字典代替](#避免使用 switch, 可用对象字典代替)
+ * [测试](#测试)
+ * [其他](#其他)
+------------------------------------------------
+
 ## 命名
 
 * 变量: variableNamesLikeThis
@@ -29,7 +41,7 @@ JSON.stringify = function() {
 
 ## 代码格式
 
-* 缩进：2个空格，不用 tab 或者其他数量的空格**（这个在团队开发时尤其重要）**
+* **缩进：2个空格，不用 tab 或者其他数量的空格（这个在团队开发时尤其重要）**
 
 * 花括号
 
@@ -68,7 +80,7 @@ JSON.stringify = function() {
 
   andNowWith(z)
   ```
-* 过长的表达式
+* 过长的表达式（大于80个字符）
 
   ```javascript
   var a = longCondition ?
@@ -107,6 +119,10 @@ var cases = {
 var expression = 'alpha'
 cases[cases[expression] ? expression : '_default']()
 ```
+
+## 测试
+  
+  
 
 
 ## 其他
