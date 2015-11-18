@@ -50,7 +50,7 @@ Generator.prototype._replacer = function(match, level, order, title) {
 
 Generator.prototype._renderContents = function(list, level) {
   list.forEach(function(item) {
-    this.contentsStr += Array(level + 1).join(' ') + '* [' + item.orders.join('.') + ' ' + item.title + '](' + item.orders.join('') + '-' + item.title + ')\r\n'
+    this.contentsStr += Array(level + 1).join(' ') + '* [' + item.orders.join('.') + ' ' + item.title + '](#' + item.orders.join('') + '-' + item.title + ')\r\n'
     item.children && this._renderContents(item.children, level + 2)
   }, this)
 }
