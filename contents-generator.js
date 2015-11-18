@@ -50,7 +50,11 @@ Generator.prototype._replacer = function(match, level, order, title) {
 
 Generator.prototype._renderContents = function(list, level) {
   list.forEach(function(item) {
-    this.contentsStr += Array(level + 1).join(' ') + '* [' + item.orders.join('.') + ' ' + item.title + '](#' + item.orders.join('') + '-' + item.title + ')\r\n'
+    var title = item.orders.join('.') + ' ' + item.title
+    var href = item.orders.join('') + '-' + item.title
+    href = href.toLowerCase()
+    href = href.replace(/\s/g, '-')
+    this.contentsStr += Array(level + 1).join(' ') + '* [' + title + '](#' + href + ')\r\n'
     item.children && this._renderContents(item.children, level + 2)
   }, this)
 }
