@@ -21,6 +21,14 @@
   * [2.8 动态特性](#28-动态特性)
 * [3 浏览器环境](#3-浏览器环境)
   * [3.1 DOM](#31-dom)
+* [4 模块化](#4-模块化)
+  * [4.1 [webpack](https://webpack.github.io)](#41-[webpack](https://webpack.github.io))
+* [5 代码检查](#5-代码检查)
+  * [5.1 [JSHint](http://jshint.com/)](#51-[jshint](http://jshint.com/))
+* [6 代码测试](#6-代码测试)
+  * [6.1 [Jasmine](http://jasmine.github.io/)](#61-[jasmine](http://jasmine.github.io/))
+* [7 自动化处理工具](#7-自动化处理工具)
+  * [7.1 [Grunt](http://www.gruntjs.net/)](#71-[grunt](http://www.gruntjs.net/))
 
 ## 1 代码风格
 
@@ -88,7 +96,10 @@ var a = !arr.length
 a++
 a = b + c
 ```
-##### 关键字后以及 `{` 前必须有一个空格。
+
+##### 前必须有一个空格。
+
+##### `if / for / while / function / switch / do / try / catch / finally` 关键字后以及 `else / {` 之前必须有一个空格。
 
 ```javascript
 // good
@@ -276,6 +287,11 @@ function test() {
 
 所有的 JavaScript 代码共享一个命名空间（浏览器环境下的 window, NodeJS环境下的 global）, 所有的全局变量直接属于这个命名空间，所以过多的全局变量可能会引起冲突，尤其是他人的代码。
 
+```javascript
+// bad
+var a = b = 0
+```
+
 ##### 变量在使用前必须通过 `var` 定义，强烈建议使用 `use strict` 来避免手误出现的全局变量。
 
 ##### 多个变量分别声明，避免删除时多出的逗号。
@@ -294,11 +310,11 @@ var hangModules = [],
 
 ### 2.2 类型转换
 
-##### 转换成 `string` 时，使用 `variable + ''`。
+##### 转换成 `string` 时，优先使用 `variable + ''`。
 
-##### 转换成 `number` 时，使用 `+variable`。
+##### 转换成 `number` 时，优先使用 `+variable`。
 
-##### 使用 `parseInt` 时，必须指定进制，否则的话如果要转换的变量以 `0` 开头，不同的浏览器可能认为是不同的进制。
+##### 使用 `parseInt` 时，必须指定进制，否则的话如果要转换的变量以 `0` 开头（比如一些月份和天），ECMAScript 3 会当作 8 进制。
 
 ##### 转换成 `boolean` 时，使用 `!!variable`。
 
@@ -397,11 +413,11 @@ for (var keys = Object.keys(obj), i = keys.length; i--; ) {
 
 ### 2.8 动态特性
 
-##### 避免使用直接 `eval` 函数。直接调用时，作用域为当前作用域，可能会造成干扰。
+##### 避免使用直接 `eval` 函数。直接调用时，作用域为当前作用域，间接调用时，作用域为全局作用域，可能会造成干扰。
 
 ##### 使用 `new Function` 执行动态代码。
 
-通过 new Function 生成的函数作用域是全局使用域，不会影响当前的作用域。
+new Function 相当于在全局作用域下声明一个函数，不会干扰其他作用域。
 
 ##### 使用函数代替动态代码。
 
@@ -433,9 +449,18 @@ with 作用域下如果没找到，会向父级寻找，可能造成未预料的
 
 ##### 尽量减少 `DOM` 操作。
 
-* 使用变量缓存 DOM 对象。
-* 循环添加节点时，使用 `document.createDocumentFragment` 存储，再一次性添加。
+使用变量缓存 DOM 对象。
 
+```javascript
+// good
+var el = document.getElementById('container')
+el.setAttribute('class', 'active')
+el.setAttribute('index', 0)
+
+// bad
+document.getElementById('container').setAttribute('class', 'active')
+document.getElementById('container').setAttribute('index', 0)
+```
 
 ##### 操作 `DOM` 时，尽量减少页面 `reflow`。
 
@@ -446,10 +471,60 @@ with 作用域下如果没找到，会向父级寻找，可能造成未预料的
 * Resize 浏览器窗口、滚动页面。
 * 读取元素的某些属性（offsetLeft、offsetTop、offsetHeight、offsetWidth、scrollTop/Left/Width/Height、clientTop/Left/Width/Height、getComputedStyle()、currentStyle(in IE)) 。
 
-所以为了减少页面 `reflow`，应将所有要处理的结果缓存到一起，再一次性操作。
+```javascript
+// good
+el.style.cssText = 'width: 100px; height: 100px;'
+
+var offsetWidth = el.offsetWidth
+while (i--) {
+  el.style.left = offsetWidth + 10 + 'px';
+}
+
+// bad
+el.style.width = '100px'
+el.style.height = '100px'
+
+while (i--) {
+  el.style.left = el.offsetWidth + 10 + 'px';
+}
+```
+
+操作 document fragment 是在内存中操作而非 DOM 树下，所以不会导致 reflow
+
+```javascript
+// good
+var docFrag = document.createDocumentFragment()
+for (var i = 0; i < 5; i++) {
+  var li = document.createElement('li')
+  docFrag.appendChild(li)
+}
+ul.appendChild(docFrag)
+
+// bad
+for (var i = 0; i < 5; i++) {
+  var li = document.createElement('li')
+  docFrag.appendChild(li)
+}
+```
 
 ##### 获取子元素使用 `children`，避免使用 `childNodes`，除非子元素包含文本、注释和属性类型的节点。
 
 ##### 优先使用 `addEventListener / attachEvent` 绑定事件，避免直接在 HTML 属性中或 DOM 的属性绑定事件。
 
 `addEventListener / attachEvent` 可绑定多个事件。
+
+## 4 模块化
+
+### 4.1 [webpack](https://webpack.github.io)
+
+## 5 代码检查
+
+### 5.1 [JSHint](http://jshint.com/)
+
+## 6 代码测试
+
+### 6.1 [Jasmine](http://jasmine.github.io/)
+
+## 7 自动化处理工具
+
+### 7.1 [Grunt](http://www.gruntjs.net/)
