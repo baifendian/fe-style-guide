@@ -27,6 +27,7 @@
 * [3 浏览器环境](#3-浏览器环境)
   * [3.1 DOM](#31-dom)
 * [4 附录](#4-附录)
+  * [4.1 ](#41-工具)
   * [4.1 工具](#41-工具)
 
 ## 1 代码风格
@@ -53,6 +54,7 @@ function() {
   const name
 }
 ```
+> Google、Twitter、Facebook、Github、Mozilla 以及 npm 上 top 10 下载中有 7 个是 2 个空格的
 
 #### 1.1.2 换行
 
@@ -70,55 +72,31 @@ if (condition) {
 }
 ```
 
-##### 运算符换行时，运算符必须在新行的行首。
+##### 运算符换行时，运算符在新行的行首。
 
 ```javascript
 
 // 链式调用
-target
-  .setPosition(300, 50)
+target.setPosition(300, 50)
   .moveTo(700, 500)
 
 // 超长的三元运算
 const result = thisIsAVeryVeryLongCondition
   ? resultA : resultB
 
-// 字符串拼接
-const html = '' // 此处用一个空字符串，以便整个HTML片段都在新行严格对齐
-  + '<article>'
-  +   '<h1>Title here</h1>'
-  +   '<p>This is a paragraph</p>'
-  +   '<footer>Complete</footer>'
-  + '</article>'
-```
 ##### 不同行为或逻辑的语句集，使用空行隔开，更易阅读。
 
 ```javascript
 function setStyle(element, property, value) {
-  if (element == null) {
-      return
-  }
+  if (element == null) return
 
   element.style[property] = value
 }
 ```
 
-##### 块末以及对象的属性和方法间保留空行
+##### 对象的属性和方法间保留空行
 
 ```javascript
-// bad
-if (foo) {
-  return bar
-}
-return baz
-
-// good
-if (foo) {
-  return bar
-}
-
-return baz
-
 // bad
 const obj = {
   foo() {
@@ -187,7 +165,7 @@ while (condition) {
 })()
 ```
 
-##### 在对象创建时，属性中的 `:` 之后必须有空格。
+##### 在对象创建时，属性中的 `:` 之后必须有空格
 
 ```javascript
 // bad
@@ -205,7 +183,22 @@ const obj = {
 }
 ```
 
-##### `()` 和 `[]` 内紧贴括号部分不允许有空格。
+##### `import/export` 后面的花括号左右各保留一个空格
+
+```javascript
+// bad
+import {Person, Relation} from 'zone'
+
+export {name, age}
+
+// good
+import { Person, Relation } from 'zone'
+
+export { name, age }
+```
+
+
+##### `()` 和 `[]` 内紧贴括号部分不允许有空格
 
 ```javascript
 // bad
@@ -357,17 +350,11 @@ const name = 'Capt. Janeway'
 
 ### 1.2 命名
 
-#### 1.2.1 格式
+##### 标识符（变量、常量、函数、属性）：variableNamesLikeThis（驼峰式）
 
-##### 对象、函数和实例（驼峰式）：variableNamesLikeThis
+> 常量全部大写的方式阅读起来比较困难
 
-##### 构造函数或类（帕斯卡式）：ClassNamesLikeThis
-
-##### 文件：fileNamesLikeThis.js
-
-##### 类文件：ClassFileNamesLikeThis.js
-
-##### 文件夹/项目名：folder-names-like-this
+##### 构造函数、单例模式：ClassNamesLikeThis（帕斯卡式）
 
 ##### 专有名词风格保持不变
 
@@ -383,9 +370,27 @@ function insertHTML(element, html) {
 }
 ```
 
-##### 使用下划线 `_` 开头命名私有属性
+##### 使用前导下划线 `_` 命名私有属性
 
-#### 1.2.2 含义
+```javascript
+// bad
+this.__firstName__ = 'Panda';
+this.firstName_ = 'Panda';
+
+// good
+this._firstName = 'Panda';
+```
+> JavaScript 没有私有属性的概念，虽然这样做并不能防止有人滥用，但至少可以阐明意图，这样做是错误的。
+
+严禁滥用下划线，比如局部变量的声明。作用域本身限制了局部变量不可被外部访问。
+
+```javascript
+// bad
+function doSomething() {
+  let _name = 'Panda'
+  let _age = 11
+}
+```
 
 ##### 避免使用单字母等无意义的名称，命名应具有描述性
 
@@ -401,16 +406,48 @@ function query() {
 }
 ```
 
-##### `类名` 使用 `名词`
-
-##### `函数名` 使用 `动宾短语`
+##### 不用别名引用 `this`，使用箭头函数，直接使用，更加简洁
 
 ```javascript
-function getStyle(element) {
+// bad
+function foo() {
+  const self = this
+  return function () {
+    console.log(self)
+  }
+}
+
+// bad
+function foo() {
+  const that = this
+  return function () {
+    console.log(that)
+  }
+}
+
+// good
+function foo() {
+  return () => {
+    console.log(this)
+  }
 }
 ```
 
-##### 存取器使用 `getVal()` 和 `setVal('hello')`
+##### 存取方法使用 `getVal() / setVal()`，意图更明确
+
+```javascript
+// bad
+dragon.age();
+
+// good
+dragon.getAge();
+
+// bad
+dragon.age(25);
+
+// good
+dragon.setAge(25);
+```
 
 ##### 布尔值，使用 `isVal` 或 `hasVal`
 
@@ -490,7 +527,8 @@ class Calculator {
 
 ##### 使用 `let` 代替 `var`
 
-> `let` 声明的变量属于块级作用域，而 `var` 声明的变量属于函数/全局作用域
+> `let` 声明的变量属于块级作用域，
+> `let` 不会带来变量提升（Hoisting）
 
 ```javascript
 // bad
@@ -514,7 +552,9 @@ console.log(i) // i is not defined
 
 > `const` 也属于块级作用域
 
-##### 多次使用的命名空间，使用对象解构替换
+> `const` 不会带来变量提升（Hoisting）
+
+##### 多次使用的命名空间，使用对象解构替换，简洁易读
 
 ```javascript
 // bad
@@ -528,31 +568,47 @@ const {x, y} = obj
 const [a, ,b] = arr
 ```
 
-> `let` / `const` 声明均不会带来变量提升（Hoisting）
-
 ### 2.2 类型转换
 
 ##### 转换成字符串时，使用 `String` 构造器
 
 ```javascript
-// bad
-const totalScore = this.reviewScore + ''
+const reviewScore = 9
 
 // bad
-const totalScore = new String(this.reviewScore)
+const totalScore = reviewScore + '' 
+// 实际调用: reviewScore.valueOf()
+const obj = {
+  valueOf: () => return 1
+}
+obj + '' // '1' 而不是 '[object Object]'
+
+// bad
+const totalScore = reviewScore.toString() // toString 方法可能被改写
 
 // good
-const totalScore = String(this.reviewScore)
+const totalScore = String(reviewScore)
 ```
 
 ##### 转换成数字时，使用 `Number` 构造器
 
 ```javascript
+const inputValue = '4'
+
 // bad
 const val = +inputValue
 
 // bad
 const val = new Number(inputValue)
+
+// bad
+/**
+ * JavaScript 位运算完全套用 Java，有三个问题：
+ * 1、位操作针对的是整数，小数部分会被舍弃
+ * 2、整数不能超过32位
+ * 3、JavaScript 的数字都是以双精度浮点数存储的，实际执行还需要先转换为整数
+ */
+const val = inputValue >> 0 
 
 // good
 const val = Number(inputValue)
@@ -563,6 +619,8 @@ const val = Number(inputValue)
 > 使用 `parseInt` 时，如果不指定进制，转换的变量以 `0` 开头（比如一些月份和天），ECMAScript 3 会当作 8 进制。
 
 ```javascript
+const inputValue = '200px'
+
 // bad
 const val = parseInt(inputValue)
 
@@ -573,6 +631,8 @@ const val = parseInt(inputValue, 10)
 ##### 转换成 `boolean` 时，使用 `Boolean` 构造器或者 `!!variable`
 
 ```javascript
+const age = 0
+
 // bad
 const hasAge = new Boolean(age)
 
@@ -610,11 +670,9 @@ if (collection.length) {
 }
 ```
 
-##### 按执行频率排列分支的顺序
-
 ##### 避免使用 `switch`
 
-`switch` 的方式需要逐条 `case` 判断且匹配的 `case` 如果漏掉 `break`，会执行下一条 `case` （不论是否满足）或 default，直到遇到 `break` 为止。
+`switch` 的方式需要逐条 `case` 判断且匹配的 `case`，如果漏掉 `break`，会执行下一条 `case` （不论是否满足）或 default，直到遇到 `break` 为止。
 
 > 使用字典对象代替，速度更快，同时避免未预料的结果。
 
@@ -634,7 +692,7 @@ const cases = {
 
 ### 2.4 循环
 
-##### 循环体不要包含函数表达式，事先将函数提取到循环体外，避免多次生成函数对象。
+##### 循环体不要包含函数表达式，事先将函数提取到循环体外，避免多次声明函数对象。
 
 ```javascript
 // bad
@@ -654,26 +712,39 @@ for (let i = 0, len = elements.length; i < len; i++) {
 }
 ```
 ##### 对有序集合进行遍历时，缓存 `length`
+
 > 虽然现代浏览器都对数组长度进行了缓存，但对于一些宿主对象和老旧浏览器的数组对象，在每次 `length` 访问时会动态计算元素个数，此时缓存 `length` 能有效提高程序性能。
 
-##### 对有序集合进行顺序无关的遍历时，使用倒序遍历，优势如下：
+```javascript
+// bad
+for (let i = 0; i < arr.length; i++) {
+  console.log(i)
+}
 
-* 无需额外变量缓存集合长度
-* 前测条件只需判断数字是否为 true，无需大小比较
-* 无需运行后执行体
-* 避免了数组越界
+// good
+for (let i = 0, len = arr.length; i < len; i++) {
+  console.log(i)
+}
+```
+
+##### 使用倒序遍历（不考虑先后顺序的情况下）
 
 ```javascript
 for (let i = elements.length; i--; ) {
   const element = elements[i]
 }
 ```
-缺点是改变了遍历的顺序，不适用于对顺序有要求的逻辑。
 
-##### 遍历对象若无需获取原型链的属性，用 `Object.keys` 和 `for` 代替 `for...in`，优势如下：
+> 无需额外变量缓存集合长度
 
-* 无需遍历原型链的属性
-* 无需 `hasOwnProperty` 判断
+> 前测条件只需判断数字是否为 true，无需大小比较
+
+> 无需运行后执行体
+
+> 避免了数组越界
+
+
+##### 遍历对象若无需获取原型链的属性，用 `Object.keys` 和 `for` 代替 `for...in`
   
 ```javascript
 for (let keys = Object.keys(obj), i = keys.length; i--; ) {
@@ -681,10 +752,21 @@ for (let keys = Object.keys(obj), i = keys.length; i--; ) {
   // ...
 }
 ```
+> `for in` 的速度很慢
+
+> 无需遍历原型链的可枚举属性
+
+> 无需 `hasOwnProperty` 判断来避免遍历原型链（ `Object.create(null)` 除外 ）
+
+10万个属性的对象两种遍历方式在 Chrome48 测试结果：
+
+`for in`: 143ms
+`Object.keys` + `for`: 45ms
+
 
 ### 2.5 字符串
 
-##### 使用字符串模版，注意是**反引号**
+##### 字符串模版
 
 ```javascript
 const name = 'lucy'
@@ -694,6 +776,16 @@ const greetings = 'Hello ' + name
 
 // good
 const greetings = `Hello ${name}`
+```
+
+##### 换行的字符串
+const html = `
+<article>
+  <h1>Title here</h1>
+  <p>This is a paragraph</p>
+  <footer>Complete</footer>
+</article>
+`
 ```
 
 ### 2.6 数组
@@ -724,6 +816,11 @@ const result = [...list]
 
 ```javascript
 const foo = document.querySelectorAll('.foo')
+
+// bad
+const nodes = Array.prototype.slice.call(foo, 0)
+
+// good
 const nodes = Array.from(foo)
 ```
 
@@ -768,30 +865,7 @@ JSON.stringify = function() {
 
 > 如果必须重写内置方法，功能上保持一致性
 
-
-##### `for...in` 遍历对象属性时, 使用 `hasOwnProperty` 过滤掉原型链中的属性
-
-> `for...in` 会遍历包括原型链中的可枚举属性
-
-```javascript
-// good
-for (let key in object) {
-  if (object.hasOwnProperty(key)) {
-    // ...
-  }
-}
-```
-
-##### 遍历对象时, 使用 `Object.keys` 过滤掉原型链中的属性
-
-> `Object.keys` 返回的是对象自身可枚举属性集合数组
-
-```javascript
-// good
-Object.keys(object).forEach(function(key) {
-  // ...
-})
-```
+##### 遍历这块前面的循环部分提过
 
 ##### 动态属性名使用属性名表达式
 
@@ -881,40 +955,24 @@ const obj = {
 
 ### 2.8 函数
 
-##### 不在循环语句中声明函数
-
-```javascript
-// bad
-for (let i = 0; i < len; i++) {
-  function foo(i) {
-    //
-  }
-  foo(i)
-}
-
-// good
-function foo(i) {
-  //
-}
-for (let i = 0; i < len; i++) {
-  foo(i)
-}
-```
+##### 不在循环体内声明函数，前面的循环提过
 
 ##### 不用使用 `arguments`，可以选择扩展运算符 `...` 替代（rest 参数）
 
-> 使用 `...` 能表明你要传入的参数。另外 rest 参数是一个真正的数组，而 `arguments` 是一个类数组
+> 使用 `...` 能表明你要传入的参数
+
+> rest 参数是一个真正的数组，而 `arguments` 是一个类数组
 
 ```javascript
 // bad
 function concatenateAll() {
-  const args = Array.prototype.slice.call(arguments);
-  return args.join('');
+  const args = Array.prototype.slice.call(arguments)
+  return args.join('')
 }
 
 // good
 function concatenateAll(...args) {
-  return args.join('');
+  return args.join('')
 }
 ``` 
 
@@ -947,7 +1005,7 @@ function handleThings(opts = {}) {
 }, this)
 
 // good
-[1, 2, 3].map((x) => {
+[1, 2, 3].map(x => {
   this.count += x
   return x * x
 })
@@ -976,21 +1034,20 @@ function handleThings(opts = {}) {
 function Queue(contents = []) {
   this._queue = [...contents]
 }
+
 Queue.prototype.pop = function() {
-  const value = this._queue[0]
-  this._queue.splice(0, 1)
-  return value
+  return this._queue.pop()
 }
 
 // good
 class Queue {
+  
   constructor(contents = []) {
     this._queue = [...contents]
   }
+
   pop() {
-    const value = this._queue[0]
-    this._queue.splice(0, 1)
-    return value
+    return this._queue.pop()
   }
 }
 ```
@@ -1000,10 +1057,13 @@ class Queue {
 ```javascript
 // bad
 const inherits = require('inherits')
+
 function PeekableQueue(contents) {
   Queue.apply(this, contents)
 }
+
 inherits(PeekableQueue, Queue)
+
 PeekableQueue.prototype.peek = function() {
   return this._queue[0]
 }
@@ -1018,7 +1078,7 @@ class PeekableQueue extends Queue {
 
 ### 2.10 模块
 
-##### 使用模组 (`import` / `export`) 而不是其他非标准模块系统
+##### 使用 `import` / `export` 而不是其他非标准模块系统
 
 ```javascript
 // bad
@@ -1040,9 +1100,50 @@ import styleGuide from './styleGuide'
 
 > `eval` 直接调用时，作用域为当前作用域，间接调用时，作用域为全局作用域，可能会造成干扰
 
+```javascript
+// 直接调用
+function test() {
+  let count = 0
+  eval('count++')
+}
+
+// 相当于
+function test() {
+  let count = 0
+  count++
+}
+
+// 间接调用
+function test() {
+  let count = 0
+  const myEval = eval
+  myEval('count++')
+}
+
+// 相当于
+function test() {
+  let count = 0
+}
+count++
+```
+
 ##### 如果一定要执行动态代码，使用 `new Function` 执行
 
 > `new Function` 相当于在全局作用域下声明一个函数，不会干扰其他作用域
+
+```javascript
+function test() {
+  const foo = new Function('name', 'return name')
+}
+
+// 相当于
+function test() {
+  
+}
+const foo = function(name) {
+  return name
+}
+```
 
 ##### 使用函数代替动态代码
 
@@ -1061,18 +1162,25 @@ setTimeout(function() {
 element.addEventListener('click', function() { ... }, false)
 ```
 
-##### 尽量不要使用 `with`。
+##### 尽量不要使用 `with`
 
-> `with` 作用域下如果没找到，会向父级寻找，可能造成未预料的结果。
+> `with` 作用域下如果没找到，会向父级寻找，可能造成未预料的结果
 
+```javascript
+// 如果 o 没有属性 x，则会读取参数 x，可能不是想要的结果
+function f(x, o) {
+  with (o) 
+    print(x)
+}
+```
 
 ## 3 浏览器环境
 
 ### 3.1 DOM
 
-##### 尽量减少 DOM 操作。
+##### 尽量减少 DOM 操作
 
-> 使用变量缓存 DOM 对象。
+> 使用变量缓存 DOM 对象
 
 ```javascript
 // bad
@@ -1110,13 +1218,13 @@ while (i--) {
 }
 ```
 
-操作 document fragment 是在内存中操作而非 DOM 树下，不会导致 reflow
+> 操作 document fragment 是在内存中操作而非 DOM 树下，不会导致 reflow
 
 ```javascript
 // bad
 for (let i = 0; i < 5; i++) {
   const li = document.createElement('li')
-  docFrag.appendChild(li)
+  ul.appendChild(li)
 }
 
 // good
@@ -1128,7 +1236,9 @@ for (let i = 0; i < 5; i++) {
 ul.appendChild(docFrag)
 ```
 
-##### 获取子元素使用 `children`，避免使用 `childNodes`，除非子元素包含文本、注释和属性类型的节点。
+##### 获取子元素使用 `children`，避免使用 `childNodes`，除非子元素包含文本、注释和属性节点
+
+> `childNodes` 的范围包括 `children`、文本、注释和属性节点
 
 ##### 优先使用 `addEventListener / attachEvent` 绑定事件，避免直接在 HTML 属性中或 DOM 的属性绑定事件
 
@@ -1137,6 +1247,10 @@ ul.appendChild(docFrag)
 > 直接在 HTML 属性中或 DOM 的属性绑定事件属于动态代码，在全局作用域下执行
 
 ## 4 附录
+
+### 参考
+
+* [Airbnb JavaScript Style](https://github.com/airbnb/javascript)
 
 ### 4.1 工具
 
