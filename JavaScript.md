@@ -81,6 +81,7 @@ target.setPosition(300, 50)
 // 超长的三元运算
 const result = thisIsAVeryVeryLongCondition
   ? resultA : resultB
+```
 
 ##### 不同行为或逻辑的语句集，使用空行隔开，更易阅读。
 
@@ -320,19 +321,7 @@ const task = (function () {
 
 #### 1.1.5 分号
 
-行末不使用分号，自执行函数前加分号
-
-```javascript
-// bad
-(() => {
-  // ...
-})()
-
-// good
-;(() => {
-  // ...
-})()
-```
+不需要，ES6 编译成 ES5 后会自动添加
 
 #### 1.1.6 引号
 
@@ -372,11 +361,11 @@ function insertHTML(element, html) {
 
 ```javascript
 // bad
-this.__firstName__ = 'Panda';
-this.firstName_ = 'Panda';
+this.__firstName__ = 'Panda'
+this.firstName_ = 'Panda'
 
 // good
-this._firstName = 'Panda';
+this._firstName = 'Panda'
 ```
 > JavaScript 没有私有属性的概念，虽然这样做并不能防止有人滥用，但至少可以阐明意图，这样做是错误的。
 
@@ -435,16 +424,16 @@ function foo() {
 
 ```javascript
 // bad
-dragon.age();
+dragon.age()
 
 // good
-dragon.getAge();
+dragon.getAge()
 
 // bad
-dragon.age(25);
+dragon.age(25)
 
 // good
-dragon.setAge(25);
+dragon.setAge(25)
 ```
 
 ##### 布尔值，使用 `isVal` 或 `hasVal`
@@ -472,7 +461,7 @@ const hasMoreCommands = function() {
  */
 function make(tag) {
   // ...
-  return element;
+  return element
 }
 ```
 
@@ -488,11 +477,11 @@ const active = true
 
 // bad
 function getType() {
-  console.log('fetching type...');
+  console.log('fetching type...')
   // set the default type to 'no type'
   const type = this._type || 'no type'
 
-  return type;
+  return type
 }
 
 // good
@@ -525,7 +514,8 @@ class Calculator {
 
 ##### 使用 `let` 代替 `var`
 
-> `let` 声明的变量属于块级作用域，
+> `let` 声明的变量属于块级作用域
+
 > `let` 不会带来变量提升（Hoisting）
 
 ```javascript
@@ -559,11 +549,11 @@ console.log(i) // i is not defined
 const x = obj.x
 const y = obj.y
 const a = arr[0]
-const b = arr[2]
+const b = arr[1]
 
 // good
-const {x, y} = obj
-const [a, ,b] = arr
+const { x, y } = obj
+const [a, b] = arr
 ```
 
 ### 2.2 类型转换
@@ -577,7 +567,7 @@ const reviewScore = 9
 const totalScore = reviewScore + '' 
 // 实际调用: reviewScore.valueOf()
 const obj = {
-  valueOf: () => return 1
+  valueOf: () => 1
 }
 obj + '' // '1' 而不是 '[object Object]'
 
@@ -777,6 +767,8 @@ const greetings = `Hello ${name}`
 ```
 
 ##### 换行的字符串
+
+```javascript
 const html = `
 <article>
   <h1>Title here</h1>
@@ -802,11 +794,11 @@ const items = []
 
 ```javascript
 // bad
-const list = [1,2,3]
+const list = [1, 2, 3]
 const result = list.concat()
 
 // good
-const list = [1,2,3]
+const list = [1, 2, 3]
 const result = [...list]
 ```
 
@@ -893,7 +885,7 @@ const atom = {
   value: 1,
 
   addValue: function (value) {
-    return atom.value + value;
+    return atom.value + value
   }
 }
 
@@ -902,7 +894,7 @@ const atom = {
   value: 1,
 
   addValue(value) {
-    return atom.value + value;
+    return atom.value + value
   }
 }
 ``` 
