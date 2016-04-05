@@ -169,7 +169,7 @@ Link.propTypes = propTypes
 export default Link
 ```
 
-## 2 代码质量
+## 2 React 特性
 
 ### 2.1 Thinking in React
 
