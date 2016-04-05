@@ -1247,4 +1247,3 @@ ul.appendChild(docFrag)
 代码规范检查
 
 * [ESlint](http://eslint.org/)
-* [JSHint](http://www.jshint.com/)
