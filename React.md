@@ -288,7 +288,7 @@ function Listing({ id }) {
 Listing.propTypes = propTypes
 ```
 
-### 2.4 shouldComponentUpdate 优先性能
+### 2.4 shouldComponentUpdate 优化性能
 
 ##### 使用 `shouldComponentUpdate` 减少不必要的 `render` 计算
 
@@ -366,6 +366,208 @@ const App = React.createClass({
         <h1>{this.state.title}</h1>
       </Wrap>
     )
+  }
+})
+```
+
+### setState
+
+##### 避免在 `componentDidMount` 以及 `componentDidUpdate` 方法上使用
+
+> 会导致二次执行 `render`
+
+##### 避免直接修改 `this.state`
+
+> 直接修改并不会触发 `render`
+
+```javascript
+// bad
+handleClick(id) {
+  this.state.id = id
+}
+
+// good
+handleClick(id) {
+  this.setState({ id })
+}
+```
+
+### refs
+
+##### 尽量不用 `refs` 来控制状态的变化，尽量用 `state/props` 来控制
+
+> 用 `refs` 来控制状态实际上阻断了数据的流向（https://github.com/facebook/react/blob/master/docs/docs/08.1-more-about-refs.zh-CN.md），除非需要操作 DOM
+
+> `refs` 不能用于无状态函数组件
+
+```javascript
+/**
+ * bad
+ * 使用 refs 方式
+ */
+
+const Modal = React.createClass({
+
+  getInitialState() {
+    isOpen: false
+  },
+  
+  open() {
+    this.setState({isOpen: true})
+  },
+
+  render() {
+    return <div className={classnames({open: this.state.isOpen})}>{this.props.children}</div>
+  }
+})
+
+const MyModal = React.createClass({
+  
+  open() {
+    this.refs.modal.open()
+  },
+
+  render() {
+    return (
+      <Modal ref="modal">
+        {this.props.children}
+        <button>确定</button>
+      </Modal>
+    )
+  }
+})
+
+const App = React.createClass({
+
+  handleOpen() {
+    this.refs.myModal.open()
+  },
+
+  render() {
+    return (
+      <div>
+        <button onClick="handleOpen">click</button>
+        <MyModal ref="myModal"></MyModal>
+      </div>
+    )
+  }
+})
+```
+
+```javascript
+/**
+ * good
+ * 使用数据流控制
+ */
+
+function Modal({ open, children }) {
+  return return <div className={classnames({ open })}>{ children }</div>
+}
+
+function MyModal(props) {
+  return (
+    <Modal {...props}>
+      {props.children}
+      <button>确定</button>
+    </Modal>
+  )
+}
+
+const App = React.createClass({
+
+  handleOpen() {
+    this.setState({isOpen: true})
+  },
+  
+  render() {
+    return (
+      <div>
+        <button onClick="handleOpen">click</button>
+        <MyModal open={this.state.isOpen}></MyModal>
+      </div>
+    )
+  }
+})
+```
+
+### 事件系统
+
+##### 事件冒泡
+
+React 的事件是虚拟的，事件冒泡不会对元素类型进行判断
+
+```javascript
+// bad
+function SearchBox(props) {
+  return (
+    <div {...props}>
+      <input type="text" onChange={props.onChange}>
+      <button type="button">搜索</button>
+    </div>
+  )
+}
+// onChange 事件冒泡（无视 div 元素不支持 onChange 事件），input 执行一次，加上 div 本身绑定了 onChange，所以执行了两次回调
+render(<SearchBox onChange={e => {}} />)
+
+// good
+function SearchBox({ onChange, ...other }) {
+  // SearchBox 本身不再绑定 onChange
+  return (
+    <div {...other}>
+      <input type="text" onChange={onChange}>
+      <button type="button">搜索</button>
+    </div>
+  )
+}
+render(<SearchBox onChange={e => {}} />)
+```
+> 阻止冒泡的方式来解决也可以
+
+
+### 单向数据流
+
+##### `props` 和 `state` 不同时管理同一状态
+
+`props` 传入的状态交给 `props` 来管理，不要用额外的 `state` 来保存状态
+
+> 如果组件的渲染不依赖 `props`，又需要管理自己的状态，可用 `state`。传入 `props` 时优先用 `props` 管理
+
+```javascript
+// bad
+const MyInput = React.createClass({
+
+  getInitialState() {
+    return {
+      value: this.props.value
+    }
+  },
+
+  componentWillReceiveProps(nextProps) {
+    'value' in nextProps && this.setState({value: nextProps.value})
+  },
+
+  handleChange(e) {
+    const value = e.target.value
+    this.setState({ value })
+    // 同步外部 props
+    this.props.onChange(value)
+  },
+
+  render() {
+    return <input type="text" value={this.state.value} onChange={this.handleChange}>
+  }
+})
+
+// good
+const MyInput = React.createClass({
+
+  handleChange(e) {
+    // 同步外部 props
+    this.props.onChange(e.target.value)
+  },
+
+  render() {
+    return <input type="text" value={this.props.value} onChange={this.handleChange}>
   }
 })
 ```
