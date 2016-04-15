@@ -400,7 +400,7 @@ handleClick(id) {
 
 ##### 尽量不用 `refs` 来控制状态的变化，尽量用 `state/props` 来控制
 
-> 用 `refs` 来控制状态实际上阻断了数据的流向（https://github.com/facebook/react/blob/master/docs/docs/08.1-more-about-refs.zh-CN.md） 除非需要操作 DOM
+> 用 `refs` 来控制状态实际上阻断了数据的流向 https://github.com/facebook/react/blob/master/docs/docs/08.1-more-about-refs.zh-CN.md 除非需要操作 DOM
 
 > `refs` 不能用于无状态函数组件
 
