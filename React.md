@@ -13,9 +13,13 @@
   * [2.1 Thinking in React](#21-thinking-in-react)
   * [2.2 属性验证](#22-属性验证)
   * [2.3 无状态组件](#23-无状态组件)
-  * [2.4 shouldComponentUpdate 优先性能](#24-shouldcomponentupdate-优先性能)
+  * [2.4 shouldComponentUpdate 优化性能](#24-shouldcomponentupdate-优化性能)
   * [2.5 render 性能优化](#25-render-性能优化)
   * [2.6 避免滥用 shouldComponentUpdate](#26-避免滥用-shouldcomponentupdate)
+  * [2.7 setState](#27-setstate)
+  * [2.8 refs](#28-refs)
+  * [2.9 事件系统](#29-事件系统)
+  * [2.10 单向数据流](#210-单向数据流)
 * [3 附录](#3-附录)
   * [3.1 参考](#31-参考)
   * [3.2 工具](#32-工具)
@@ -370,7 +374,7 @@ const App = React.createClass({
 })
 ```
 
-### setState
+### 2.7 setState
 
 ##### 避免在 `componentDidMount` 以及 `componentDidUpdate` 方法上使用
 
@@ -392,11 +396,11 @@ handleClick(id) {
 }
 ```
 
-### refs
+### 2.8 refs
 
 ##### 尽量不用 `refs` 来控制状态的变化，尽量用 `state/props` 来控制
 
-> 用 `refs` 来控制状态实际上阻断了数据的流向（https://github.com/facebook/react/blob/master/docs/docs/08.1-more-about-refs.zh-CN.md），除非需要操作 DOM
+> 用 `refs` 来控制状态实际上阻断了数据的流向（https://github.com/facebook/react/blob/master/docs/docs/08.1-more-about-refs.zh-CN.md） 除非需要操作 DOM
 
 > `refs` 不能用于无状态函数组件
 
@@ -490,7 +494,7 @@ const App = React.createClass({
 })
 ```
 
-### 事件系统
+### 2.9 事件系统
 
 ##### 事件冒泡
 
@@ -524,7 +528,7 @@ render(<SearchBox onChange={e => {}} />)
 > 阻止冒泡的方式来解决也可以
 
 
-### 单向数据流
+### 2.10 单向数据流
 
 ##### `props` 和 `state` 不同时管理同一状态
 
