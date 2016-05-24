@@ -20,6 +20,7 @@
   * [2.8 refs](#28-refs)
   * [2.9 事件系统](#29-事件系统)
   * [2.10 单向数据流](#210-单向数据流)
+  * [2.11 复合对象不直接写在属性里](#211-复合对象不直接写在属性里)
 * [3 附录](#3-附录)
   * [3.1 参考](#31-参考)
   * [3.2 工具](#32-工具)
@@ -156,19 +157,17 @@ render() {
 ```javascript
 import React, { PropTypes } from 'react';
 
-const propTypes = {
-  id: PropTypes.number.isRequired,
-  url: PropTypes.string.isRequired,
-  text: PropTypes.string,
-}
-
 const Link = React.createClass({
   render() {
     return <a href={this.props.url} data-id={this.props.id}>{this.props.text}</a>
   }
 })
 
-Link.propTypes = propTypes
+Link.propTypes = {
+  id: PropTypes.number.isRequired,
+  url: PropTypes.string.isRequired,
+  text: PropTypes.string,
+}
 
 export default Link
 ```
@@ -239,16 +238,14 @@ const App = React.createClass({
 // good
 import React, { PropTypes } from 'react'
 
-const propTypes = {
-  items: PropTypes.array.isRequired,
-  onChange: PropTypes.fun
-}
-
 const Comments = React.createClass({
   // ...
 })
 
-Comments.propTypes = propTypes
+Comments.propTypes = {
+  items: PropTypes.array.isRequired,
+  onChange: PropTypes.fun
+}
 ```
 
 ### 2.3 无状态组件
@@ -267,7 +264,7 @@ const Listing = React.createClass({
   }
 })
 
-// bad (since arrow functions do not have a "name" property)
+// bad (arrow functions have none "name" property)
 const Listing = ({ id }) => (
   <div>{id}</div>
 )
@@ -281,15 +278,13 @@ function Listing({ id }) {
 那么无状态组件属性验证如何写？
 
 ```javascript
-const propTypes = {
-  id: PropTypes.number.isRequired,
-}
-
 function Listing({ id }) {
   return <div>{id}</div>;
 }
 
-Listing.propTypes = propTypes
+Listing.propTypes = {
+  id: PropTypes.number.isRequired,
+}
 ```
 
 ### 2.4 shouldComponentUpdate 优化性能
@@ -575,6 +570,10 @@ const MyInput = React.createClass({
   }
 })
 ```
+
+### 2.11 复合对象不直接写在属性里
+
+> 复合对象直接写在属性里，每次执行 `render` 即重新创建一次，同时，如果恰巧 shouldComponentUpdate 内部有相关的判断，则永远不相等
 
 
 ## 3 附录
